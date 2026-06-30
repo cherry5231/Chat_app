@@ -171,11 +171,14 @@ def messages():
 
     for msg in msgs:
 
-        data.append({
-            "username": msg.username,
-            "text": msg.text,
-            "time": msg.time.strftime("%H:%M")
-        })
+       
+            data.append({
+        "id": msg.id,
+        "username": msg.username,
+        "text": msg.text,
+        "time": msg.time.strftime("%H:%M"),
+        "mine": msg.username == current_user.username
+    })
 
     return jsonify(data)
 
@@ -188,7 +191,19 @@ def messages():
 def logout():
     logout_user()
     return redirect("/login")
+@app.route("/delete/<int:message_id>", methods=["POST"])
+@login_required
+def delete_message(message_id):
 
+    message = Message.query.get_or_404(message_id)
+
+    if message.username != current_user.username:
+        return "Unauthorized", 403
+
+    db.session.delete(message)
+    db.session.commit()
+
+    return "Deleted"
 
 import os
 
