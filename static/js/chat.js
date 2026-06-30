@@ -16,16 +16,22 @@ async function loadMessages() {
 
         div.className = "message";
 
-        div.innerHTML = `
-            <div class="sender">
-                ${message.username}
-                <small>${message.time}</small>
-            </div>
+       div.innerHTML = `
+    <div class="sender">
+        ${message.username}
+        <small>${message.time}</small>
+    </div>
 
-            <div class="text">
-                ${message.text}
-            </div>
-        `;
+    <div class="text">
+        ${message.text}
+    </div>
+
+    ${message.mine ? `
+        <button onclick="deleteMessage(${message.id})">
+            🗑 Delete
+        </button>
+    ` : ""}
+`;
 
         chatBox.appendChild(div);
 
@@ -55,7 +61,14 @@ form.addEventListener("submit", async function(e){
     loadMessages();
 
 });
+async function deleteMessage(id) {
 
+    await fetch(`/delete/${id}`, {
+        method: "POST"
+    });
+
+    loadMessages();
+}
 loadMessages();
 
 setInterval(loadMessages,2000);
